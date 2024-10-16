@@ -1,10 +1,11 @@
 {
     "name": "pochi",
+    "type": "module",
     "version": "1.0.0",
     "description": "Interprete para ecuaciones sencillas",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
     },
     "author": "Alan Andrés Torres Sánchez",
     "license": "MIT",
@@ -12,6 +13,14 @@
         "mathjs": "^13.2.0"
     },
     "devDependencies": {
-        "jest": "^29.7.0"
+        "@types/jest": "^29.5.13",
+        "jest": "^29.7.0",
+        "babel-jest": "^29.7.0",
+        "@babel/core": "^7.21.0",
+        "@babel/preset-env": "^7.21.0"
+    },
+    "jest": {
+        "testEnvironment": "node",
+        "transform": {}
     }
 }

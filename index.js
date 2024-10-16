@@ -136,16 +136,12 @@ ____awowoooouuuu!________
             formula_tokens: result,
             test_result: test_result_concat,
             test_obj: test_obj,
-            /**
-            * Evalúa una fórmula reemplazando variables por sus valores correspondientes.
-            *
-            * @param {Array<Object>} variables - Lista de objetos que contienen las variables y sus valores. Cada objeto debe tener las propiedades `code` y `value`.
-            * @returns {number} - El resultado de evaluar la fórmula matemática.
-            */
-            evaluate_with: this.evaluate_with,
+            evaluate_with: (variables) => {
+                return this.#evaluate_with(evaluable_formula, variables);
+            }
         };
     }
-    evaluate_with = (variables) => {
+    #evaluate_with = (evaluable_formula, variables) => {
         if (!variables) {
             return 0;
         }
