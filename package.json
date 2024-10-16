@@ -1,0 +1,17 @@
+{
+    "name": "pochi",
+    "version": "1.0.0",
+    "description": "Interprete para ecuaciones sencillas",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Alan Andrés Torres Sánchez",
+    "license": "MIT",
+    "dependencies": {
+        "mathjs": "^13.2.0"
+    },
+    "devDependencies": {
+        "jest": "^29.7.0"
+    }
+}
