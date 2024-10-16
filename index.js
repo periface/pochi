@@ -1,4 +1,4 @@
-import { Lexer } from './lexer.js';
+import { Lexer } from './src/lexer.js';
 //POWERED BY MATHJS
 // https://mathjs.org/
 import * as math from 'mathjs';
