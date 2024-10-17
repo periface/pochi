@@ -125,7 +125,21 @@ ____awowoooouuuu!________
             return variable ? variable.value : 0;
         })
         // test
-        const test_result = math.evaluate(evaluable_formula_replaced);
+        const test_result = this.#evaluate(evaluable_formula_replaced);
+        if(test_result.error){
+            console.error(test_result.error);
+            return {
+                variables: variables,
+                non_evaluable_formula: non_evaluable_formula,
+                evaluable_formula: evaluable_formula,
+                evaluable_formula_replaced: evaluable_formula_replaced,
+                formula_literal: this.formula_literal,
+                formula_tokens: result,
+                test_result: test_result.data,
+                test_obj: test_obj,
+                error: test_result.error
+            }
+        }
         const test_result_concat = evaluable_formula_replaced + ' = ' + test_result;
         return {
             variables: variables,
@@ -136,10 +150,27 @@ ____awowoooouuuu!________
             formula_tokens: result,
             test_result: test_result_concat,
             test_obj: test_obj,
+            error: null,
             evaluate_with: (variables) => {
                 return this.#evaluate_with(evaluable_formula, variables);
             }
         };
+    }
+    #evaluate(formula) {
+        try{
+            const res = math.evaluate(formula);
+            return {
+                data: res,
+                error: null
+            }
+        }
+        catch (e) {
+            console.error(e);
+            return {
+                data: null,
+                error: e
+            }
+        }
     }
     #evaluate_with = (evaluable_formula, variables) => {
         if (!variables) {
