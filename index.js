@@ -182,7 +182,7 @@ ____awowoooouuuu!________
             });
             return variable ? variable.value : 0;
         })
-        return math.evaluate(evaluable_formula_replaced);
+        return this.#evaluate(evaluable_formula_replaced);
     }
     sanitize_formula = (formula) => {
         // remove accents
