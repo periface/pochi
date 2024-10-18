@@ -1,9 +1,16 @@
 import { TokenType, lookupToken } from './token.js';
 class Lexer {
+    constructor({
+        skippable_words = []
+    }) {
+        this.skippable_words = skippable_words;
+    }
     input = '';
     position = 0;
     readPosition = 0;
+    skippable_words = [];
     ch = '';
+    verbose = false;
     new = (input) => {
         this.input = input;
         this.readChar();
@@ -73,7 +80,7 @@ class Lexer {
                         this.readChar();
                     }
                     // we add a code to the token to be able to identify it in the future
-                    token.code = getFirstLeterFromWord(token.literal);
+                    token.code = getFirstLeterFromWord(token.literal, this.skippable_words);
                     return token;
                 } else if (isDigit(this.ch)) {
                     token.literal = this.readNumber();
@@ -144,9 +151,20 @@ function newToken(tokenType, ch) {
     };
 }
 // to make token names
-function getFirstLeterFromWord(str) {
+function getFirstLeterFromWord(str, skippable_words = []) {
     let result = '';
     let words = str.split(' ');
+    skippable_words = skippable_words.map((word) => word.toLowerCase());
+    // skip words that are in the skippable list
+    if (skippable_words.length > 0) {
+        words = words.filter((word) => {
+            if (word === '') {
+                return false;
+            }
+            return !skippable_words.includes(word.toLowerCase());
+        });
+    }
+
     for (let i = 0; i < words.length; i++) {
         result += (words[i][0] || '').toUpperCase();
     }

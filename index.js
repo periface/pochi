@@ -1,6 +1,5 @@
 import { Lexer } from './src/lexer.js';
 import * as Types from './types.js';
-//POWERED BY MATHJS
 // https://mathjs.org/
 import * as math from 'mathjs';
 
@@ -27,6 +26,8 @@ class Repl {
      * @type {*}
      */
     static math = math;
+
+    skippable_words = [];
     /**
      * Creates an instance of Repl.
      *
@@ -71,11 +72,12 @@ ____awowoooouuuu!________
         const tokens = [];
         if (!text) return;
         const line = text;
-        const lexer = new Lexer().new(line);
+        const lexer = new Lexer({
+            skippable_words: this.skippable_words
+        }).new(line);
         for (let token = lexer.nextToken(); token.type !== 'EOF'; token = lexer.nextToken()) {
             tokens.push(token);
         }
-        console.log(tokens);
         return tokens;
     }
     /**
@@ -211,6 +213,20 @@ ____awowoooouuuu!________
         formula = formula.replace(/\t/g, '');
         // remove line jumps
         formula = formula.replace(/\r/g, '');
+
+        // remove commas
+        formula = formula.replace(/,/g, '');
+
+        // remove dots
+        formula = formula.replace(/\./g, '');
+        formula = formula.replace(/;/g, '');
+        // remove [ and ]
+        formula = formula.replace(/\[/g, '');
+        formula = formula.replace(/\]/g, '');
+
+
+        formula = formula.replace(/\{/g, '');
+        formula = formula.replace(/\}/g, '');
         return formula;
     }
 }
