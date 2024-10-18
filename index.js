@@ -1,12 +1,37 @@
 import { Lexer } from './src/lexer.js';
+import * as Types from './types.js';
 //POWERED BY MATHJS
 // https://mathjs.org/
 import * as math from 'mathjs';
 
+
+/**
+ * Clase principal que se encarga de procesar fórmulas y extraer variables.
+ * usan el analizador léxico (lexer) y el motor de evaluación de fórmulas de mathjs.
+ *
+ * @class Repl - Clase principal que se encarga de procesar fórmulas y extraer variables.
+ * @typedef {Repl}
+ */
 class Repl {
 
+    /**
+     * Fórmula literal
+     *
+     * @type {string}
+     */
     formula_literal = '';
+    /**
+     * Instancia de mathjs
+     *
+     * @static
+     * @type {*}
+     */
     static math = math;
+    /**
+     * Creates an instance of Repl.
+     *
+     * @constructor
+     */
     constructor() {
 
         console.log(`%c   ||
@@ -25,25 +50,20 @@ ____awowoooouuuu!________
      * Sanitiza el texto de una fórmula, lo convierte en tokens y extrae las variables.
      *
      * @param {string} text - El texto de la fórmula que se va a sanitizar y analizar.
-     * @returns {Object} - Un objeto que contiene las variables extraídas, las fórmulas evaluables y los tokens generados.
+     * @returns {Types.ParseFormulaResult} - Un objeto que contiene las variables extraídas, las fórmulas evaluables y los tokens generados.
      *
-     * @property {Array<Object>} tokens - Los tokens generados a partir del análisis léxico de la fórmula.
-     *
-     * @see sanitize_formula - Función que limpia y normaliza el texto de la fórmula.
-     * @see parse - Función que convierte el texto en tokens.
-     * @see get_variables - Función que extrae las variables de los tokens y genera fórmulas evaluables.
      */
     parse_formula = (text) => {
         text = this.sanitize_formula(text);
         this.formula_literal = text;
         const tokens = this.parse(text);
-        return { ...this.get_variables(tokens), tokens: tokens };
+        return { ...this.get_variables(tokens) };
     }
     /**
     * Convierte un texto dado en una lista de tokens usando un analizador léxico (lexer).
     *
     * @param {string} text - El texto que se va a analizar y convertir en tokens.
-    * @returns {Array<Object>|undefined} - Retorna un array de tokens si el texto es válido, o `undefined` si no se proporciona texto.
+    * @returns {Array<Types.TokenType>|undefined} - Retorna un array de tokens si el texto es válido, o `undefined` si no se proporciona texto.
     *
     * Cada token es un objeto con diferentes propiedades, como `type` y `literal`.
     */
@@ -55,34 +75,23 @@ ____awowoooouuuu!________
         for (let token = lexer.nextToken(); token.type !== 'EOF'; token = lexer.nextToken()) {
             tokens.push(token);
         }
+        console.log(tokens);
         return tokens;
     }
     /**
      * Procesa el resultado de una fórmula, identifica las variables y genera fórmulas evaluables.
      *
      * @param {Array<Object>} result - Lista de tokens que representan una fórmula. Cada token puede contener diferentes propiedades como `type`, `code`, y `literal`.
-     * @returns {Object} - Un objeto que contiene las variables extraídas, las fórmulas evaluables y otros datos útiles.
+     * @returns {Types.GetVariablesResult} - Un objeto que contiene las variables extraídas, las fórmulas evaluables y otros datos útiles.
      *
-     * @property {Array<Object>} variables - Lista de variables identificadas en la fórmula. Cada variable es un token de tipo `IDENT`.
-     * @property {string} non_evaluable_formula - Fórmula original en la que las variables se mantienen como sus identificadores literales.
-     * @property {string} evaluable_formula - Fórmula donde las variables han sido reemplazadas por su sintaxis evaluable (`{var}`).
-     * @property {string} evaluable_formula_replaced - Fórmula en la que las variables han sido reemplazadas por sus valores numéricos.
-     * @property {string} formula_literal - Representación literal de la fórmula original.
-     * @property {Array<Object>} formula_tokens - Lista completa de tokens generados a partir de la fórmula.
-     * @property {string} test_result - Resultado de la evaluación de la fórmula con los valores de prueba concatenado con la fórmula.
-     * @property {Array<Object>} test_obj - Lista de objetos de prueba que contienen variables y sus valores de prueba generados aleatoriamente.
-     * @property {Function} evaluate_with - Función que evalúa la fórmula utilizando las variables proporcionadas. Documentada por separado.
-     * @property {string} [error] - Mensaje de error si no se puede procesar la fórmula.
      */
     get_variables = (result) => {
         if (!result) {
             return {
                 variables: [],
                 evaluable_formula: '',
-                evaluable_formula_replaced: '',
                 formula_literal: '',
-                formula_tokens: [],
-                test_obj: [],
+                tokens: [],
                 error: 'Error al parsear la fórmula',
             };
         }
@@ -97,8 +106,6 @@ ____awowoooouuuu!________
 
         let evaluable_formula = '';
         let non_evaluable_formula = '';
-        const test_obj = [
-        ]
         let ident_tokens = result.map((token) => {
             if (token.type === 'IDENT') {
                 evaluable_formula += `{${token.code}}`;
@@ -111,53 +118,26 @@ ____awowoooouuuu!________
             }
         });
         ident_tokens = ident_tokens.filter((token) => token);
-        for (let token of ident_tokens) {
-            test_obj.push({
-                variable: token,
-                value: this.get_random_number(1, 100)
-            });
-
-        }
-        const evaluable_formula_replaced = evaluable_formula.replace(/{(.*?)}/g, (_, p1) => {
-            const variable = test_obj.find((obj) => {
-                return obj.variable.code === p1
-            });
-            return variable ? variable.value : 0;
-        })
-        // test
-        const test_result = this.#evaluate(evaluable_formula_replaced);
-        if(test_result.error){
-            console.error(test_result.error);
-            return {
-                variables: variables,
-                non_evaluable_formula: non_evaluable_formula,
-                evaluable_formula: evaluable_formula,
-                evaluable_formula_replaced: evaluable_formula_replaced,
-                formula_literal: this.formula_literal,
-                formula_tokens: result,
-                test_result: test_result.data,
-                test_obj: test_obj,
-                error: test_result.error
-            }
-        }
-        const test_result_concat = evaluable_formula_replaced + ' = ' + test_result;
         return {
             variables: variables,
             non_evaluable_formula: non_evaluable_formula,
             evaluable_formula: evaluable_formula,
-            evaluable_formula_replaced: evaluable_formula_replaced,
             formula_literal: this.formula_literal,
-            formula_tokens: result,
-            test_result: test_result_concat,
-            test_obj: test_obj,
+            tokens: result,
             error: null,
             evaluate_with: (variables) => {
                 return this.#evaluate_with(evaluable_formula, variables);
             }
         };
     }
+    /**
+     * Description placeholder
+     *
+     * @param {*} formula
+     * @returns {({ data: number; error: any; } | { data: number; error: any; })}
+     */
     #evaluate(formula) {
-        try{
+        try {
             const res = math.evaluate(formula);
             return {
                 data: res,
@@ -172,6 +152,14 @@ ____awowoooouuuu!________
             }
         }
     }
+    /**
+
+    * Evalúa una fórmula con las variables proporcionadas.
+    *
+    * @param {string} evaluable_formula - Fórmula que se va a evaluar.
+    * @param {Array<Types.TokenType>} variables - Lista de variables con sus valores numéricos.
+    * @returns {Types.EvaluateWithResult} - Un objeto que contiene el resultado de la evaluación y otros datos útiles.
+    **/
     #evaluate_with = (evaluable_formula, variables) => {
         if (!variables) {
             return 0;
@@ -182,8 +170,26 @@ ____awowoooouuuu!________
             });
             return variable ? variable.value : 0;
         })
-        return this.#evaluate(evaluable_formula_replaced);
+        const evaluation_result = this.#evaluate(evaluable_formula_replaced);
+        if (evaluation_result.error) {
+            return {
+                data: { ...evaluation_result.data, replaced_formula: evaluable_formula_replaced },
+                error: evaluation_result.error,
+                replaced_formula: evaluable_formula_replaced + ' = ' + evaluation_result.data
+            }
+        }
+        return {
+            data: evaluation_result.data,
+            replaced_formula: evaluable_formula_replaced + ' = ' + evaluation_result.data,
+            error: null
+        }
     }
+    /**
+     * Sanitiza una fórmula, eliminando caracteres no deseados.
+     *
+     * @param {*} formula
+     * @returns {*}
+     */
     sanitize_formula = (formula) => {
         // remove accents
         const accents = 'áéíóúÁÉÍÓÚ';
@@ -207,9 +213,5 @@ ____awowoooouuuu!________
         formula = formula.replace(/\r/g, '');
         return formula;
     }
-    get_random_number = (from, to) => {
-        return Math.floor(Math.random() * (to - from + 1)) + from;
-    }
-
 }
 export { Repl };
