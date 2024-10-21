@@ -175,7 +175,7 @@ ____awowoooouuuu!________
         const evaluation_result = this.#evaluate(evaluable_formula_replaced);
         if (evaluation_result.error) {
             return {
-                data: { ...evaluation_result.data, replaced_formula: evaluable_formula_replaced },
+                data: { ...evaluation_result.data },
                 error: evaluation_result.error,
                 replaced_formula: evaluable_formula_replaced + ' = ' + evaluation_result.data
             }
