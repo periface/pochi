@@ -1,7 +1,7 @@
 {
     "name": "pochijs",
     "type": "module",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "Interprete para ecuaciones sencillas",
     "main": "index.js",
     "scripts": {
