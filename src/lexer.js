@@ -9,6 +9,8 @@ class Lexer {
     position = 0;
     readPosition = 0;
     skippable_words = [];
+
+    prevToken = ''
     ch = '';
     verbose = false;
     new = (input) => {
@@ -81,6 +83,12 @@ class Lexer {
                     }
                     // we add a code to the token to be able to identify it in the future
                     token.code = getFirstLeterFromWord(token.literal, this.skippable_words);
+                    // check if token is repeated
+                    // if it is, we add random one letter to the code
+                    if (token.code === this.prevToken) {
+                        token.code += this.#getRandomLetter();
+                    }
+                    this.prevToken = token.code;
                     return token;
                 } else if (isDigit(this.ch)) {
                     token.literal = this.readNumber();
@@ -103,6 +111,9 @@ class Lexer {
         }
         this.readChar();
         return token;
+    }
+    #getRandomLetter = () => {
+        return String.fromCharCode(65 + Math.floor(Math.random() * 26));
     }
     readNumber = () => {
         let position = this.position;

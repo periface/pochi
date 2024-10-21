@@ -121,6 +121,12 @@ Número de Bienes Adquiridos) * 100
             expected_result: 10,
             test_result: "(10/100)*100 = 10",
 
+        },
+
+        {
+            literal: `"(axis/axios) * 100
+"`,
+            checkSame: true,
         }
 
     ]
@@ -138,17 +144,24 @@ Número de Bienes Adquiridos) * 100
     ]
     expect(repl).toBeDefined();
     for (let formula of formulas) {
-        const result = repl.parse_formula(formula.literal);
-        expect(result).toBeDefined();
-        expect(result.variables).toBeDefined();
-        expect(result.non_evaluable_formula).toBeDefined();
-        expect(result.evaluable_formula).toBeDefined();
-        expect(result.formula_literal).toBeDefined();
-        expect(result.formula_literal).toBe(sanitize_formula(formula.literal));
-        expect(result.evaluable_formula).toBe(formula.expected);
-        const evaluated_result = result.evaluate_with(formula.values);
-        expect(evaluated_result.error).toBeNull();
-        expect(evaluated_result.replaced_formula).toBe(formula.test_result);
+        if (formula.checkSame) {
+            const result = repl.parse_formula(formula.literal);
+            console.log(result);
+        }
+        else {
+            const result = repl.parse_formula(formula.literal);
+            expect(result).toBeDefined();
+            expect(result.variables).toBeDefined();
+            expect(result.non_evaluable_formula).toBeDefined();
+            expect(result.evaluable_formula).toBeDefined();
+            expect(result.formula_literal).toBeDefined();
+            expect(result.formula_literal).toBe(sanitize_formula(formula.literal));
+            expect(result.evaluable_formula).toBe(formula.expected);
+            const evaluated_result = result.evaluate_with(formula.values);
+            expect(evaluated_result.error).toBeNull();
+            expect(evaluated_result.replaced_formula).toBe(formula.test_result);
+        }
+
     }
 });
 
