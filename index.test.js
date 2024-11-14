@@ -1,4 +1,4 @@
-import * as Types from './types';
+import * as Types from './src/types.js';
 import { Repl } from './index';
 test('Repl', () => {
     const formulas = [

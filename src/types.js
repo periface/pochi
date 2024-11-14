@@ -1,3 +1,4 @@
+
 /**
  * Resultado de get_variables
  * @typedef {Object} GetVariablesResult

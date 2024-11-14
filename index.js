@@ -1,5 +1,5 @@
 import { Lexer } from './src/lexer.js';
-import * as Types from 'types.js';
+import * as Types from './src/types.js';
 // https://mathjs.org/
 import * as math from 'mathjs';
 
