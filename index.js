@@ -1,5 +1,5 @@
 import { Lexer } from './src/lexer.js';
-import * as Types from './types.js';
+import * as Types from 'types.js';
 // https://mathjs.org/
 import * as math from 'mathjs';
 
@@ -185,6 +185,9 @@ ____awowoooouuuu!________
             replaced_formula: evaluable_formula_replaced + ' = ' + evaluation_result.data,
             error: null
         }
+    }
+    run_with_variables = (formula, variables) => {
+        return this.#evaluate_with(formula, variables);
     }
     /**
      * Sanitiza una fórmula, eliminando caracteres no deseados.
